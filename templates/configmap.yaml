@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-lavinmq-config
+  labels:
+    {{- include "lavinmq.labels" . | nindent 4 }}
+data:
+  lavinmq.ini: |-
+    {{- include "lavinmq.config" . | nindent 4 }}

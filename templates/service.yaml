@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-lavinmq
+  labels:
+    {{- include "lavinmq.labels" . | nindent 4 }}
+  annotations:
+    {{- include "lavinmq.service.annotations" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "lavinmq.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.config.mgmt.port }}
+      name: mgmt
+      targetPort: {{ .Values.config.mgmt.port }}
+    - port: {{ .Values.config.amqp.port }}
+      name: amqp
+      targetPort: {{ .Values.config.amqp.port }}
+    {{- if .Values.config.clustering.enabled }}
+    - port: {{ .Values.config.clustering.port }}
+      name: clustering
+      targetPort: {{ .Values.config.clustering.port }}
+    {{- end }}
+    {{- if and .Values.config.mgmt.tls_port (ne (int .Values.config.mgmt.tls_port) -1) }}
+    - port: {{ .Values.config.mgmt.tls_port }}
+      name: mgmt-tls
+      targetPort: {{ .Values.config.mgmt.tls_port }}
+    {{- end }}
+    {{- if .Values.config.amqp.tls_port }}
+    - port: {{ .Values.config.amqp.tls_port }}
+      name: amqp-tls
+      targetPort: {{ .Values.config.amqp.tls_port }}
+    {{- end }}

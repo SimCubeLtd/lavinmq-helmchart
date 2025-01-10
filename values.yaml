@@ -1,0 +1,130 @@
+# Image configuration
+image:
+  repository: docker.io/cloudamqp/lavinmq
+  tag: main
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# LavinMQ Configuration
+config:
+  # [main] section configurations
+  main:
+    consumer_timeout: nil
+    data_dir: /var/lib/lavinmq
+    data_dir_lock: true
+    default_consumer_prefetch: 65535
+    free_disk_min: nil
+    free_disk_warn: nil 
+    guest_only_loopback: true
+    log_exchange: false
+    log_file: nil
+    log_level: info
+    max_deleted_definitions: 8192
+    segment_size: 8388608
+    set_timestamp: false
+    socket_buffer_size: 16384
+    stats_interval: 5000
+    stats_log_size: 120
+    tcp_keepalive: 
+    tcp_nodelay: false
+    tcp_recv_buffer_size: nil
+    tcp_send_buffer_size: nil
+    tls_cert: nil
+    tls_key: nil
+    tls_ciphers: nil
+    tls_min_version: 1.2
+
+  # [mgmt] section configurations
+  mgmt:
+    bind: 127.0.0.1
+    port: 15672
+    systemd_socket_name: lavinmq-http.socket
+    tls_port: -1
+    unix_path: /tmp/lavinmq-http.sock
+
+  # [amqp] section configurations
+  amqp:
+    bind: 127.0.0.1
+    channel_max: 2048
+    frame_max: 1048576
+    heartbeat: 0
+    max_message_size: 134217728
+    port: 5672
+    systemd_socket_name: lavinmq-amqp.socket
+    tcp_proxy_protocol: false
+    tls_port: 5671
+    unix_path: /tmp/lavinmq.sock
+    unix_proxy_protocol: true
+
+  # [clustering] section configurations
+  clustering:
+    advertised_uri: nil
+    bind: 127.0.0.1
+    enabled: false
+    etcd_endpoints: localhost:2379
+    etcd_prefix: lavinmq
+    max_unsynced_actions: 8192
+    port: 5679
+
+# Statefulset configuration
+replicaCount: 1
+
+# Service annotations
+annotations:
+  service: {}
+  statefulset: {}
+
+# Storage configuration
+storage:
+  size: 10Gi
+  accessMode: ReadWriteOnce
+
+# Resource configuration
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+# Extra environment variables
+extraEnv: {}
+
+# Extra containers
+extraContainers: {}
+
+# Persistence configuration
+persistence:
+  enabled: true
+  storageClass: ""
+  accessMode: ReadWriteOnce
+  size: 10Gi
+
+# Service configuration
+service:
+  type: LoadBalancer
+
+# Service account configuration
+serviceAccount:
+  create: true
+  name:
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+  hosts:
+    - host: lavinmq.example.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    enabled: false
+    existingSecret:
+    secretName: lavinmq-tls
+    hosts:
+      - lavinmq.example.com

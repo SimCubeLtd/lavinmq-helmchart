@@ -1,0 +1,5 @@
+apiVersion: v2
+name: lavinmq
+description: A Helm chart for LavinMQ message broker
+version: 0.1.0
+appVersion: "main"

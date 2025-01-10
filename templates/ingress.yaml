@@ -1,0 +1,47 @@
+{{- if .Values.ingress.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Release.Name }}-lavinmq-mgmt
+  labels:
+    {{- include "lavinmq.labels" . | nindent 4 }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+    {{- $root := . }}
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path | default "/" }}
+            pathType: {{ .pathType | default "ImplementationSpecific" }}
+            backend:
+              service:
+                name: {{ $root.Release.Name }}-lavinmq
+                port:
+                  number: {{ $root.Values.config.mgmt.port }}
+          {{- end }}
+    {{- end }}
+  {{- if .Values.ingress.tls.enabled }}
+  tls:
+    {{- if .Values.ingress.tls.existingSecret }}
+    - secretName: {{ .Values.ingress.tls.existingSecret }}
+      hosts:
+        {{- range .Values.ingress.tls.hosts }}
+        - {{ . }}
+        {{- end }}
+    {{- else }}
+    - secretName: {{ .Values.ingress.tls.secretName }}
+      hosts:
+        {{- range .Values.ingress.tls.hosts }}
+        - {{ . }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
