@@ -2,24 +2,49 @@
 {{- define "lavinmq.config" -}}
 [main]
 {{- range $key, $value := .Values.config.main }}
-{{ $key }} = {{ $value }}
+{{- if $value }}
+{{ $key }} = {{ if eq (typeOf $value) "float64" -}}
+{{ printf "%.0f" $value }}
+{{- else -}}
+{{- $value -}}
+{{- end }}
+{{- end }}
 {{- end }}
 
 [mgmt]
 {{- range $key, $value := .Values.config.mgmt }}
-{{ $key }} = {{ $value }}
+{{- if $value }}
+{{ $key }} = {{ if eq (typeOf $value) "float64" -}}
+{{ printf "%.0f" $value }}
+{{- else -}}
+{{- $value -}}
+{{- end }}
+{{- end }}
 {{- end }}
 
 [amqp]
 {{- range $key, $value := .Values.config.amqp }}
-{{ $key }} = {{ $value }}
+{{- if $value }}
+{{ $key }} = {{ if eq (typeOf $value) "float64" -}}
+{{ printf "%.0f" $value }}
+{{- else -}}
+{{- $value -}}
+{{- end }}
+{{- end }}
 {{- end }}
 
 [clustering]
 {{- range $key, $value := .Values.config.clustering }}
-{{ $key }} = {{ $value }}
+{{- if $value }}
+{{ $key }} = {{ if eq (typeOf $value) "float64" -}}
+{{ printf "%.0f" $value }}
+{{- else -}}
+{{- $value -}}
 {{- end }}
 {{- end }}
+{{- end }}
+{{- end }}
+
 
 {{/* Common labels */}}
 {{- define "lavinmq.labels" -}}
