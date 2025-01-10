@@ -9,15 +9,15 @@ image:
 config:
   # [main] section configurations
   main:
-    consumer_timeout: nil
+    consumer_timeout: 
     data_dir: /var/lib/lavinmq
     data_dir_lock: true
     default_consumer_prefetch: 65535
-    free_disk_min: nil
-    free_disk_warn: nil 
+    free_disk_min: 
+    free_disk_warn:  
     guest_only_loopback: true
     log_exchange: false
-    log_file: nil
+    log_file: 
     log_level: info
     max_deleted_definitions: 8192
     segment_size: 8388608
@@ -27,11 +27,11 @@ config:
     stats_log_size: 120
     tcp_keepalive: 
     tcp_nodelay: false
-    tcp_recv_buffer_size: nil
-    tcp_send_buffer_size: nil
-    tls_cert: nil
-    tls_key: nil
-    tls_ciphers: nil
+    tcp_recv_buffer_size: 
+    tcp_send_buffer_size: 
+    tls_cert: 
+    tls_key: 
+    tls_ciphers: 
     tls_min_version: 1.2
 
   # [mgmt] section configurations
@@ -58,7 +58,7 @@ config:
 
   # [clustering] section configurations
   clustering:
-    advertised_uri: nil
+    advertised_uri: 
     bind: 127.0.0.1
     enabled: false
     etcd_endpoints: localhost:2379
@@ -103,7 +103,7 @@ persistence:
 
 # Service configuration
 service:
-  type: LoadBalancer
+  type: ClusterIP
 
 # Service account configuration
 serviceAccount:
