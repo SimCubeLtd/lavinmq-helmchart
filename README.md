@@ -1,5 +1,7 @@
 # LavinMQ Helm Chart
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/lavinmq)](https://artifacthub.io/packages/search?repo=lavinmq)
+
 This is a helm chart to deploy [LavinMQ](https://lavinmq.com) to a kubernetes cluster.
 The below text is taken directly from the LavinMQ FAQ page at: [FAQ](https://lavinmq.com/documentation/frequently-asked-questions#what-is-lavinmq)
 
