@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-lavinmq
+  labels:
+    {{- include "lavinmq.labels" . | nindent 4 }}
+  annotations:
+    {{- include "lavinmq.service.annotations" . | nindent 4 }}
+spec:
+  serviceAccountName: {{ include "lavinmq.serviceAccountName" . | quote}}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "lavinmq.selectorLabels" . | nindent 6 }}
+  serviceName: "{{ .Release.Name }}-lavinmq"
+  template:
+    metadata:
+      labels:
+        {{- include "lavinmq.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: {{ include "lavinmq.terminationGracePeriod" . }}
+      containers:
+        - name: lavinmq
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: lavinmq-data
+              mountPath: {{ .Values.config.main.data_dir }}
+            - name: lavinmq-config
+              mountPath: /etc/lavinmq/lavinmq.ini
+              subPath: lavinmq.ini
+          ports:
+            - containerPort: {{ .Values.config.mgmt.port }}
+              name: mgmt
+            - containerPort: {{ .Values.config.amqp.port }}
+              name: amqp
+            {{- if .Values.config.clustering.enabled }}
+            - containerPort: {{ .Values.config.clustering.port }}
+              name: clustering
+            {{- end }}
+            {{- if and .Values.config.mgmt.tls_port (ne (int .Values.config.mgmt.tls_port) -1) }}
+            - containerPort: {{ .Values.config.mgmt.tls_port }}
+              name: mgmt-tls
+            {{- end }}
+            {{- if .Values.config.amqp.tls_port }}
+            - containerPort: {{ .Values.config.amqp.tls_port }}
+              name: amqp-tls
+            {{- end }}
+          env:
+            {{ include "lavinmq.extraEnv" . | nindent 12 }}
+          {{ include "lavinmq.resources" . | nindent 10 }}
+      volumes:
+        - name: lavinmq-config
+          configMap:
+            name: {{ .Release.Name }}-lavinmq-config
+        {{- if not .Values.persistence.enabled }}
+        - name: lavinmq-data
+          emptyDir: {}
+        {{- end }}
+      {{ include "lavinmq.extraContainers" . | nindent 6 }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: lavinmq-data
+      spec:
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- end }}
+        accessModes: [ {{ .Values.persistence.accessMode }} ]
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+  {{- end }}
